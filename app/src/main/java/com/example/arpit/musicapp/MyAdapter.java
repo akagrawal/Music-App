@@ -93,7 +93,7 @@ public class MyAdapter extends RecyclerView.Adapter {
     @NonNull
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.songrow, parent, false);
+        View v = LayoutInflater.from(parent.getContext()).inflate(R.layout.song_row, parent, false);
         MyViewHolder vh = new MyViewHolder(v);
         return vh;
 
