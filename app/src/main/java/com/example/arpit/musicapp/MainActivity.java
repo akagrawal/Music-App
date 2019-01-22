@@ -10,8 +10,14 @@ import android.support.v7.widget.Toolbar;
 import android.view.View;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.ViewGroup;
+import android.widget.ImageButton;
+
+import java.util.ArrayList;
+import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -19,9 +25,19 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-        MyAdapter ada = new MyAdapter();
+
         RecyclerView rv = findViewById(R.id.songlist);
         rv.setLayoutManager(new LinearLayoutManager(this));
+        //rv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
+        View playbar  = findViewById(R.id.playbar);
+        ImageButton bt = findViewById(R.id.bar_pp);
+        bt.setBackgroundResource(R.drawable.play);
+        //ViewGroup.LayoutParams params = playbar.getLayoutParams();
+        //params.height = 0;
+        playbar.setVisibility(View.GONE);
+        //playbar.requestLayout();
+
+        MyAdapter ada = new MyAdapter(rv, playbar);
         rv.setAdapter(ada);
     }
 
