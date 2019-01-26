@@ -1,8 +1,10 @@
 package com.example.arpit.musicapp;
 
+import android.Manifest;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
@@ -17,6 +19,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 
 public class MainActivity extends AppCompatActivity {
+    private static int mypermission = 1;
+    final private String[] perm = {Manifest.permission.READ_EXTERNAL_STORAGE};
+
+    public void setRecyclerView(MyAdapter ada){
+
+        RecyclerView rv = findViewById(R.id.songlist);
+        rv.setLayoutManager(new LinearLayoutManager(this));
+        rv.setAdapter(ada);
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -25,20 +36,13 @@ public class MainActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
-
-        RecyclerView rv = findViewById(R.id.songlist);
-        rv.setLayoutManager(new LinearLayoutManager(this));
-        //rv.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT));
-        View playbar  = findViewById(R.id.playbar);
-        ImageButton bt = findViewById(R.id.bar_pp);
-        bt.setBackgroundResource(R.drawable.play);
-        //ViewGroup.LayoutParams params = playbar.getLayoutParams();
-        //params.height = 0;
-        playbar.setVisibility(View.GONE);
-        //playbar.requestLayout();
-
-        MyAdapter ada = new MyAdapter(rv, playbar);
-        rv.setAdapter(ada);
+        ActivityCompat.requestPermissions(this, perm, mypermission);
+        //start from here..
+        //tracks_list tl = new tracks_list((View)findViewById(R.id.playbar), (ImageButton) findViewById(R.id.bar_pp));
+        SongsManager sm =  new SongsManager(this);
+        Player player = new Player(this, sm);
+        MyAdapter ada = new MyAdapter(player, sm);
+        setRecyclerView(ada);
     }
 
     @Override
