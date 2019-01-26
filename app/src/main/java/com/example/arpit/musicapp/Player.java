@@ -1,34 +1,44 @@
 package com.example.arpit.musicapp;
 import android.graphics.Bitmap;
+import android.media.AudioAttributes;
 import android.media.AudioManager;
 import android.media.MediaPlayer;
 import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.util.Log;
+import android.view.DragEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
 import android.widget.ImageView;
+import android.widget.SeekBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.io.IOException;
+import java.util.logging.Handler;
 
 
-public class Player extends MediaPlayer implements View.OnClickListener {
+public class Player extends MediaPlayer implements View.OnClickListener, SeekBar.OnSeekBarChangeListener {
 
     static int PLAYING = 1;
     static int PAUSED = 0;
     static int STOPPED = -1;
+    public boolean dragging = false;
     static public int playing_pos = -1;
     public int state;
     public View mBarView=null;
     public ImageButton mBarPlay= null;
+    public SeekBar mSeekbar=null;
     public ImageButton mRowPlay = null;
     public Player.MyViewHolder holder = null;
     MainActivity main;
     SongsManager sm;
+    SeekBarUpdater mSeekBarUpdater = null;
+    Thread t;
+
+
 
     public Player(MainActivity main, SongsManager sm){
         this.sm = sm;
@@ -36,9 +46,19 @@ public class Player extends MediaPlayer implements View.OnClickListener {
         this.state = STOPPED;
         this.mBarView = main.findViewById(R.id.bar_view);
         this.mBarPlay = main.findViewById(R.id.bar_pp);
-        if(this.state==STOPPED)
-            mBarView.setVisibility(View.GONE);
+        this.mSeekbar = main.findViewById(R.id.seekBar);
+
+        mSeekbar.setOnSeekBarChangeListener(this);
         mBarPlay.setOnClickListener(this);
+        mSeekBarUpdater = new SeekBarUpdater(this, mSeekbar);
+        t = new Thread(mSeekBarUpdater);
+        if(this.state==STOPPED){
+            mSeekbar.setVisibility(View.GONE);
+            mBarView.setVisibility(View.GONE);
+        }
+
+        //mSeekbar.setOnSeekBarChangeListener(this);
+
     }
     public Player(View barView, ImageButton barplay){
         this.state = STOPPED;
@@ -49,25 +69,62 @@ public class Player extends MediaPlayer implements View.OnClickListener {
         else
             mBarView.setVisibility(View.VISIBLE);
         mBarPlay.setOnClickListener(this);
-    }
-    @Override
-    public void onClick(View v) {
-        ImageButton bt = (ImageButton)v;
-        if(this.state!=Player.PLAYING){
-            bt.setBackgroundResource(R.drawable.play);
-            this.setstate(Player.PLAYING);
-            this.start();
-            //this.play(playing_pos);
-        }
-        else{
-            bt.setBackgroundResource(R.drawable.pause);
-            //  holder.playbutton.setBackgroundResource(R.drawable.pause);
-            this.setstate(Player.PAUSED);
-            this.pause();
-            //this.stop();
-        }
+
     }
 
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        Log.e("onprogress", "start"+ fromUser);
+        //Toast.makeText(main.getApplicationContext(),"Progess Changed to "+progress, Toast.LENGTH_SHORT).show();
+        //mSeekbar.setProgress(getCurrentPosition());
+        if(fromUser) {
+            int sec = progress/1000;
+            sec%=60;
+            if(sec<10)
+                ((TextView) main.findViewById(R.id.time)).setText(progress / 60000 + ":0" + sec);
+            else{
+                ((TextView) main.findViewById(R.id.time)).setText(progress / 60000 + ":" + sec);
+            }
+            seekBar.setProgress(progress);
+        }
+
+    }
+
+    @Override
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        Log.e("OnStartTracking", "start");
+       // Toast.makeText(main.getApplicationContext(),"start tracking", Toast.LENGTH_SHORT).show();
+        dragging = true;
+    }
+
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        Log.e("onstoptracking", "stop");
+        dragging = false;
+        this.seekTo((seekBar.getProgress()));
+        //Toast.makeText(main.getApplicationContext(),"stop tracking", Toast.LENGTH_SHORT).show();
+    }
+
+    @Override
+    public void onClick(View v) {
+        if (v.getId() == R.id.bar_pp) {
+            ImageButton bt = (ImageButton) v;
+            if (this.state != Player.PLAYING) {
+                bt.setBackgroundResource(R.drawable.play);
+                this.setstate(Player.PLAYING);
+                this.start();
+                //this.play(playing_pos);
+            } else {
+                bt.setBackgroundResource(R.drawable.pause);
+                //  holder.playbutton.setBackgroundResource(R.drawable.pause);
+                this.setstate(Player.PAUSED);
+                this.pause();
+                //this.stop();
+            }
+        } else if (v.getId()==R.id.seekBar){
+
+        }
+    }
     class MyViewHolder extends RecyclerView.ViewHolder {
 
         public TextView title;
@@ -126,7 +183,7 @@ public class Player extends MediaPlayer implements View.OnClickListener {
         int pos = vh.getAdapterPosition();
 
         if (holder == null) {
-            Toast.makeText(main.getApplicationContext(), "FIrst time call", Toast.LENGTH_SHORT).show();
+            Toast.makeText(main.getApplicationContext(), "FIrst time call...", Toast.LENGTH_SHORT).show();
             state = PLAYING;
             setHolder(vh);         //Row
 
@@ -138,6 +195,7 @@ public class Player extends MediaPlayer implements View.OnClickListener {
             playing_pos = pos;
 
             main.findViewById(R.id.bar_view).setVisibility(View.VISIBLE);
+            main.findViewById(R.id.seekBar).setVisibility(View.VISIBLE);
             //return;
         }
         else{
@@ -175,13 +233,16 @@ public class Player extends MediaPlayer implements View.OnClickListener {
     public void updateOnBind(Player.MyViewHolder vh, int pos){
 
         Bitmap bm = sm.mTracks.get(pos).albumArt;
-        if(bm==null)
+        if(bm==null){
+            Log.e("Null at", pos+"");
             vh.album.setBackgroundResource(R.drawable.album);
+        }
         else
             vh.album.setImageBitmap(bm);
         vh.title.setText(sm.mTracks.get(pos).title);
 
         if(pos== Player.playing_pos){
+            resetHolder();
             setHolder(vh);
         }
 
@@ -202,14 +263,20 @@ public class Player extends MediaPlayer implements View.OnClickListener {
     }
     void play(int position)
     {
+        if(isPlaying()){
+            this.reset();
+            //this.stop();
+        }
         this.setAudioStreamType(AudioManager.STREAM_MUSIC);
-
+        if(playing_pos==-1)
+            t.start();
         try {
             this.setDataSource(main.getApplicationContext(), Uri.parse(sm.mTracks.get(position).path));
             this.prepareAsync();
             this.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
                 @Override
                 public void onPrepared(MediaPlayer mp) {
+                    mSeekbar.setMax(getDuration());
                     if (isPlaying()) {
                         mp.pause();
                         mp.seekTo(0);

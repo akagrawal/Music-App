@@ -18,7 +18,7 @@ public class AudioModel {
     String album;
     String path;
     Uri albumArtURI;
-    Bitmap albumArt;
+    Bitmap albumArt = null;
     long count = 0;
     long duration;
     public void print(){

@@ -71,6 +71,7 @@ public class SongsManager {
             } catch (Exception e) {
 
                 //Log.e("Error: ", e+"");
+                data.setAlbumArt(null);
 
             }
             mTracks.add(data);

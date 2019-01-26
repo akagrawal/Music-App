@@ -17,26 +17,41 @@
         android:layout_marginTop="4dp"
         android:layout_marginEnd="8dp"
         android:layout_marginRight="8dp"
+        android:layout_marginBottom="30dp"
         android:visibility="visible"
-        app:layout_constraintBottom_toTopOf="@+id/bar_view"
+        app:layout_constraintBottom_toBottomOf="@+id/seekBar"
         app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.0"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintVertical_bias="0.52"
         app:layout_constraintVertical_weight="0.8" />
 
-    <View
-        android:id="@+id/bar_view"
+
+    <SeekBar
+        android:id="@+id/seekBar"
         android:layout_width="0dp"
-        android:layout_height="70dp"
-        android:layout_marginTop="4dp"
-        android:background="@drawable/bar_back"
+        android:layout_height="20dp"
+        android:layout_marginBottom="70dp"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@+id/songlist"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="1.0"
+        app:layout_constraintVertical_weight="0.03" />
+
+    <View
+        android:id="@+id/bar_view"
+        android:layout_width="0dp"
+        android:layout_height="0dp"
+        android:layout_marginTop="20dp"
+        android:visibility="visible"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="0.5"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="@+id/seekBar"
         app:layout_constraintVertical_weight="0.1" />
 
     <ImageView
@@ -61,12 +76,12 @@
         android:id="@+id/bar_title"
         android:layout_width="0dp"
         android:layout_height="0dp"
-        android:layout_marginBottom="8dp"
-        android:layout_marginEnd="4dp"
-        android:layout_marginLeft="4dp"
-        android:layout_marginRight="4dp"
         android:layout_marginStart="4dp"
+        android:layout_marginLeft="4dp"
         android:layout_marginTop="8dp"
+        android:layout_marginEnd="4dp"
+        android:layout_marginRight="4dp"
+        android:layout_marginBottom="8dp"
         android:gravity="center"
         app:fontFamily="sans-serif-condensed"
         app:layout_constraintBottom_toBottomOf="@+id/bar_view"
@@ -95,6 +110,19 @@
         app:layout_constraintHorizontal_bias="0.5"
         app:layout_constraintHorizontal_weight="1"
         app:layout_constraintStart_toEndOf="@+id/bar_title"
+        app:layout_constraintTop_toTopOf="@+id/bar_view" />
+
+    <TextView
+        android:id="@+id/time"
+        android:layout_width="50dp"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="4dp"
+        android:text="xyz"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@+id/bar_pp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintHorizontal_bias="1.0"
+        app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="@+id/bar_view" />
 
 </android.support.constraint.ConstraintLayout>
