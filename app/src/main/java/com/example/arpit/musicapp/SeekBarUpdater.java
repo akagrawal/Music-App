@@ -1,47 +1,52 @@
 package com.example.arpit.musicapp;
-
 import android.util.Log;
 import android.widget.SeekBar;
-import android.widget.TextView;
 
-public class SeekBarUpdater implements Runnable {
-
-    Player player = null;
+public class SeekBarUpdater implements Runnable, SeekBar.OnSeekBarChangeListener {
+    public Player mp;
     SeekBar mSeekBar;
-
-    public SeekBarUpdater(Player p, SeekBar seekBar){
-        this.player = p;
-        this.mSeekBar = seekBar;
+    boolean drag = false;
+    public SeekBarUpdater(SeekBar seekbar, Player p){
+        this.mSeekBar = seekbar;
+        this.mp = p;
+    }
+    @Override
+    public void run() {
+        while(true){
+            if(drag==false && mp.isPlaying()){
+                int t = mp.getCurrentPosition();
+                mSeekBar.setProgress(t);
+            }
+            try
+            {
+                Thread.sleep(1000);
+            }
+            catch(Exception e) {
+                Log.e("Exception: ", e+"");
+            }
+        }
     }
 
     @Override
-    public void run() {
+    public void onStartTrackingTouch(SeekBar seekBar) {
+        Log.e("Drag: ", "start");
+        drag = true;
 
-        Log.e("SeekBarUpdate", "Update");
+    }
 
-        while(true){
-            if(this.mSeekBar.getMax()==100){
-                continue;
-            }
-        try {
+    @Override
+    public void onProgressChanged(SeekBar seekBar, int progress, boolean fromUser) {
+        //seekBar.setProgress(progress);
+        if(fromUser)
+            mp.seekTo(progress);
+        Log.e("Progress : ", "------->");
 
-            if(this.player.dragging ==false) {
-                this.mSeekBar.setProgress(player.getCurrentPosition());
-                int sec = player.getCurrentPosition()/1000;
-                sec%=60;
-                if(sec<10)
-                    ((TextView) this.player.main.findViewById(R.id.time)).setText(player.getCurrentPosition() / 60000 + ":0" + sec);
-                else{
-                    ((TextView) this.player.main.findViewById(R.id.time)).setText(player.getCurrentPosition() / 60000 + ":" + sec);
-                }
-            }
-            //Log.e("SeekBarUpdate", "max:"+this.mSeekBar.getMax()+" " +this.mSeekBar.getProgress()+" Update to "+ player.getCurrentPosition());
+    }
 
-            Thread.sleep(1000);
-        }
-        catch (Exception e ){
-            Log.e("Exception", e+"");
-            }
-        }
+    @Override
+    public void onStopTrackingTouch(SeekBar seekBar) {
+        Log.e("Drag: ", "Stop");
+        mp.seekTo(seekBar.getProgress());
+        drag = false;
     }
 }

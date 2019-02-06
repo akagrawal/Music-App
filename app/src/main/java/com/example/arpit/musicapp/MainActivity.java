@@ -15,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.widget.ImageButton;
+import android.widget.SearchView;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -44,12 +45,20 @@ public class MainActivity extends AppCompatActivity {
         Player player = new Player(this, sm);
         MyAdapter ada = new MyAdapter(player, sm);
         setRecyclerView(ada);
-    }
+        SearchView sv = findViewById(R.id.search);
+        sv.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                Log.e("Query: ", query);
+                return false;
+            }
 
-    @Override
-    protected void onResume() {
-        super.onResume();
-        Log.e("Resume:", "start=============>ss");
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                Log.e("Query changed to : ", newText);
+                return false;
+            }
+        });
     }
 
     @Override

@@ -9,6 +9,8 @@ import android.util.Log;
 import java.io.IOException;
 import java.io.InputStream;
 
+
+
 public class AudioModel {
 
     long id;
@@ -18,9 +20,9 @@ public class AudioModel {
     String album;
     String path;
     Uri albumArtURI;
-    Bitmap albumArt = null;
+    Bitmap albumArt;
     long count = 0;
-    long duration;
+
     public void print(){
 
         Log.e("albumData:", "\nID: +"+id+
@@ -32,12 +34,16 @@ public class AudioModel {
 
     public void setID(long id){this.id = id;}
     public void setTitle(String title){this.title= title;}
-    public void setArtist(String artist){this.artist = artist;}
+    public void setArtist(String artist){
+        int idx = artist.indexOf('-');
+        if(idx!=-1)
+            this.artist = "Artist: "+ artist.substring(0, idx);
+        else
+            this.artist = "Artist: "+ artist;
+    }
     public void setAlbum(String album){this.album = album;}
     public void setAlbumID(long albumID){this.albumID = albumID;}
     public void setPath(String path){this.path= path;}
-    public void setDuration(long duraiton){this.duration = duration;}
-
     public void setAlbumArtURI(Uri albumArtURI){
         this.albumArtURI= albumArtURI;
     }
@@ -51,4 +57,3 @@ public class AudioModel {
 
 
 }
-

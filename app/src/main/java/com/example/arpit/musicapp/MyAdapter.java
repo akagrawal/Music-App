@@ -20,6 +20,7 @@ public class MyAdapter extends RecyclerView.Adapter {
     public MyAdapter(Player player, SongsManager sm){
         this.player = player;
         this.manager = sm;
+        player.mAdapter = this;
     }
 
 
@@ -35,12 +36,12 @@ public class MyAdapter extends RecyclerView.Adapter {
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         Log.e("Created:",MyAdapter.count+"");
         count++;
-        Player.MyViewHolder vh = player.createViewHolder(parent, viewType);
+        Player.MyViewHolder vh = player.createViewHolder(parent, viewType, this);
         return vh;
     }
     @Override
     public int getItemCount() {
-        //Log.e("Size: ", manager.mTracks.size()+"");
+
         return manager.mTracks.size();
     }
 }
